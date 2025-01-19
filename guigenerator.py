@@ -1,7 +1,6 @@
 from tkinter import *
 from tkinter.font import Font
 from math import ceil
-import sys, subprocess
 
 class GUIgenerator:
     def __init__(self):
