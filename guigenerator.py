@@ -5,7 +5,8 @@ from math import ceil
 class GUIgenerator:
     def __init__(self):
         self.__root = None
-        self.__magicNumbers = {"x_pos": 10, "y_pos": 10, "descriptionPadding": 14, "padding": 30, "default_width": 400, "entry_width": 30, "wrapMargin": 40, "fontSize": 10, "positioningMargins": [8, 10, 20]}
+        self.__magicNumbers = {"x_pos": 10, "y_pos": 10, "x_pos_const": 10, "y_pos_const": 10, "descriptionPadding": 14, "padding": 30, "default_width": 400, "entry_width": 30,
+                               "wrapMargin": 40, "fontSize": 10, "positioningMargins": [8, 10, 20], "button2PlacementHeight": 40, "center2Entry": 25}
         self.__width = 0
         self.__entries = []
         
@@ -30,7 +31,7 @@ class GUIgenerator:
     def __placeDescription(self, args):
         if "desc" in args.keys():
             Label(self.__root, text=args["desc"], font=self.label_font, wraplength=self.__width - self.__magicNumbers["wrapMargin"]).place(x=self.__magicNumbers["x_pos"], y=self.__magicNumbers["y_pos"])
-            self.__magicNumbers["y_pos"] += ceil(len(args["desc"]) / self.__numberOfCharsInArow) * self.__magicNumbers["descriptionPadding"]
+            self.__magicNumbers["y_pos"] += (ceil(len(args["desc"]) / self.__numberOfCharsInArow) * self.__magicNumbers["descriptionPadding"]) + self.__magicNumbers["descriptionPadding"]
 
     def __generateEntries(self, args):
         for i in args["args"]:
@@ -45,7 +46,7 @@ class GUIgenerator:
     def __createButtonAndStart(self, args, func):
         button = Button(self.__root, text="Confirm", command=lambda: self.__handleConfirmation(args, func))
         button.place(x=((self.__width - button.winfo_reqwidth()) // 2), y=self.__magicNumbers["y_pos"])
-        self.__magicNumbers["y_pos"] += 40
+        self.__magicNumbers["y_pos"] += self.__magicNumbers["wrapMargin"]
         
         self.__root.title(func.__name__)
         self.__root.geometry(f"{int(self.__width)}x{self.__magicNumbers['y_pos']}+100+100")
@@ -56,21 +57,33 @@ class GUIgenerator:
         f = func(*values)
         self.__resultWindow(f)
 
-    def addInput(self):
+    def addInput(self, arg=""):
         t = Toplevel()
         t.title("Additional input")
-        t.geometry("200x50+200+200")
-        entry = Entry(t, width=self.__magicNumbers["entry_width"])
-        entry.pack()
+        label_font = Font(family="Arial", size=self.__magicNumbers["fontSize"])
+        entry_pixel_width = self.__magicNumbers["entry_width"] * self.__magicNumbers["positioningMargins"][0]
+        self.__width = (10 + label_font.measure(arg) + entry_pixel_width)
+        t.geometry(f"{self.__width}x80+200+200")
         result = ""
-        
+        if arg != "":
+            Label(t, text=arg, font=label_font).place(x=self.__magicNumbers["x_pos_const"], y=self.__magicNumbers["y_pos_const"])
+            label_width = label_font.measure(arg)
+            entry_x_pos = (label_width + self.__magicNumbers["padding"])
+            entry = Entry(t, width=self.__magicNumbers["entry_width"])
+            entry.place(x=entry_x_pos, y=self.__magicNumbers["y_pos_const"])
+        else:
+            entry = Entry(t, width=self.__magicNumbers["entry_width"])
+            entry.place(x=self.__magicNumbers["x_pos_const"]+self.__magicNumbers["center2Entry"], y=self.__magicNumbers["y_pos_const"])
+
         def confirm():
             nonlocal result
             result = entry.get()
             if len(result) > 0:
                 t.destroy()
 
-        Button(t, text="Confirm", command=confirm).pack()
+        button = Button(t, text="Confirm", command=lambda: confirm())
+        button.place(x=((self.__width - button.winfo_reqwidth()) // 2), y=self.__magicNumbers["button2PlacementHeight"])
+        
         self.__root.wait_window(t)
         return result
 
