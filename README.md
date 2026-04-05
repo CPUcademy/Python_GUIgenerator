@@ -1,4 +1,4 @@
-The GUI-generator Python module enables quick and interactive interfaces for testing functions without requiring to build a full-fledged GUI.
+The GUI-generator Python module enables the creation of simple, interactive interfaces for testing functions without building a full-fledged GUI.
 
 It can be installed using the pip package manager (pip install gui-generator). To generate a GUI window, we only need to provide a function for the program to execute and, if it takes any parameters, specify their descriptions that will display next to the input fields. They have to be entered in the same order as the function's parameters. We can also provide an additional description that will display at the top of the window by adding the desc parameter. After the user enters the values and clicks "Confirm," the given function will execute. The value it returns is displayed in a new window.
 
